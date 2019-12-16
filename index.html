@@ -1,0 +1,148 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+    <!-- jQuery library -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    
+    <link href="https://cdn.jsdelivr.net/gh/gitbrent/bootstrap4-toggle@3.5.0/css/bootstrap4-toggle.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/gh/gitbrent/bootstrap4-toggle@3.5.0/js/bootstrap4-toggle.min.js"></script>
+    <style>
+        table {
+          width: 100%;
+          border: 1px solid #444444;
+          border-collapse: collapse;
+        }
+        th, td {
+          border: 1px solid #444444;
+        }
+    </style>
+</head>
+<body>
+  <h1>주차상태</h1>
+    <div style="position: absolute; left: 200px; top: 0px;" >
+      <input onchange="javascript:buttonOnClick()" type="checkbox" checked data-toggle="toggle" data-size="lg">
+    </div>
+    <table>
+      <tr>
+        <th style="width:120px;">센서이름</th>
+        <th>상태</th>
+      </tr>
+      <tr>
+        <td>
+          no3-98EE
+        </td>
+        <td>
+          <svg height="100" width="100">
+            <circle id="00800000040098EE" cx="50" cy="50" r="40" stroke="black" stroke-width="3" fill="green" />
+          </svg>
+        </td>
+      </tr>
+      <tr>
+        <td>
+          no4-9981
+        </td>
+        <td>
+          <svg height="100" width="100">
+            <circle id="0080000004009981" cx="50" cy="50" r="40" stroke="black" stroke-width="3" fill="green" />
+          </svg>
+        </td>
+      </tr>
+      <tr>
+        <td>
+          no5-98AE
+        </td>
+        <td>
+          <svg height="100" width="100">
+            <circle id="00800000040098AE" cx="50" cy="50" r="40" stroke="black" stroke-width="3" fill="green" />
+          </svg>
+        </td>
+      </tr>
+    </table>
+    <hr />
+    <h1>payload 정보</h1>
+    <h5> [[ 센서ID ]]날짜시간 | 센서EUI | dataChan | data type | value | payload</h5>
+    <div id="messages" style="overflow-y:scroll; height: 500px; "></div>
+    <button onclick="javascript:downloadInnerHtml('#messages', true, 'out.txt', 'application/txt', '.txt');">파일로 저장</button>
+    <script type="text/javascript" src="stomp.js"></script>
+    <script type="text/javascript" src="mqtt_stomp.js"></script>
+    <script type="text/javascript" src="common.js"></script>
+    <script src="./parser.js"></script>
+<script>
+  function downloadInnerHtml(elementid, htmllinereplace, filename, mimeType, extension) {
+  var elHtml = $(elementid).html();
+  console.log(elHtml);
+  if (htmllinereplace) elHtml = elHtml.replace(/<br ?\/?>/g,'\n');
+  var link = document.createElement('a');
+  link.setAttribute('download', filename + extension);
+  link.setAttribute('href', 'data:' + mimeType  +  ';charset=utf-8,' + encodeURIComponent(elHtml));
+  link.click();
+}
+onSub =
+function addMessage(message) {
+  var body_obj = JSON.parse(message.body);
+  var dest = message.headers.destination.split('.');
+  var device_id = dest[2];
+  var msg_type = dest[dest.length-1];
+  var textcolor = 'black';
+  var payload = _base64ToHexStr(body_obj.payload);
+  var parsed_payload_info = [getDataChanDesc(payload), getDataType(payload), getParsedValue(payload)]
+  var device_name = {'00800000040098EE':'no3-98EE', '0080000004009981':'no4-9981', '00800000040098AE':'no5-98AE'};
+  
+  if ( parsed_payload_info[2] == 'vacant') {
+    $("#" + device_id).attr('fill', 'green')
+    textcolor = 'green';
+    
+  } else if ( parsed_payload_info[2] == 'occupied') {
+    $("#" + device_id).attr('fill', 'red')
+    textcolor = 'red';
+  }
+
+  $("#messages").append(
+    '<p style="color:' + textcolor + ';">'
+      + ' <b>[[ ' + device_name[device_id] + ' ]]</b> '
+      + getFormattedCurrentDatetime() + ' | '
+      + device_id + ' | '
+      + parsed_payload_info[0] + ' | '
+      + parsed_payload_info[1] + ' | '
+      + parsed_payload_info[2] + ' | '
+      + payload
+      //+ msg_type
+      + '</p>'
+      );
+  $("#messages").scrollTop($("#messages").prop("scrollHeight"));
+}
+
+var topic = "/topic/v2.1493460000000001.#";
+var mqttAddr = "wss://mq.data-alliance.com:15673/ws";
+
+var username = "monitor";
+var password = "ahslxj1!";
+
+var stompClient = new mqtt_stomp(mqttAddr, username, password, topic, onSub);
+stompClient.subscribe();
+
+$(window).on("beforeunload", function(){
+	 if (stompClient != null) {
+	        stompClient.disconnect();
+	 }
+});
+
+function buttonOnClick() {
+  if ($('input').is(":checked") == true) {
+    if(!stompClient.isSubscribe()) {
+      stompClient.subscribe();
+    }
+  } else {
+    if(stompClient.isSubscribe()) {
+      stompClient.unsubscribe();
+    }
+  }
+
+}
+
+
+</script>
+</body>
+</html>
