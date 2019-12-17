@@ -69,49 +69,55 @@
     <script type="text/javascript" src="mqtt_stomp.js"></script>
     <script type="text/javascript" src="common.js"></script>
     <script src="./parser.js"></script>
-<script>
-  function downloadInnerHtml(elementid, htmllinereplace, filename, mimeType, extension) {
-  var elHtml = $(elementid).html();
-  console.log(elHtml);
-  if (htmllinereplace) elHtml = elHtml.replace(/<br ?\/?>/g,'\n');
-  var link = document.createElement('a');
-  link.setAttribute('download', filename + extension);
-  link.setAttribute('href', 'data:' + mimeType  +  ';charset=utf-8,' + encodeURIComponent(elHtml));
-  link.click();
-}
-onSub =
-function addMessage(message) {
-  var body_obj = JSON.parse(message.body);
-  var dest = message.headers.destination.split('.');
-  var device_id = dest[2];
-  var msg_type = dest[dest.length-1];
-  var textcolor = 'black';
-  var payload = _base64ToHexStr(body_obj.payload);
-  var parsed_payload_info = [getDataChanDesc(payload), getDataType(payload), getParsedValue(payload)]
-  var device_name = {'00800000040098EE':'no3-98EE', '0080000004009981':'no4-9981', '00800000040098AE':'no5-98AE'};
-  
-  if ( parsed_payload_info[2] == 'vacant') {
-    $("#" + device_id).attr('fill', 'green')
-    textcolor = 'green';
-    
-  } else if ( parsed_payload_info[2] == 'occupied') {
-    $("#" + device_id).attr('fill', 'red')
-    textcolor = 'red';
-  }
+    <script>
+      getParsedValue("01 01 01 03 02 01 5E 3F 01 01 37 00 20 37 00 80");
+      function downloadInnerHtml(elementid, htmllinereplace, filename, mimeType, extension) {
+        var elHtml = $(elementid).html();
+        console.log(elHtml);
+        if (htmllinereplace) elHtml = elHtml.replace(/<br ?\/?>/g,'\n');
+        var link = document.createElement('a');
+        link.setAttribute('download', filename + extension);
+        link.setAttribute('href', 'data:' + mimeType  +  ';charset=utf-8,' + encodeURIComponent(elHtml));
+        link.click();
+      }
+      onSub =    
+        function addMessage(message) {
+          var body_obj = JSON.parse(message.body);
+          var dest = message.headers.destination.split('.');
+          var device_id = dest[2];
+          var msg_type = dest[dest.length-1];
+          var textcolor = 'black';
+          var payload = _base64ToHexStr(body_obj.payload);
+          var parsedList = getParsedValue(payload);
+          var device_name = {'0080000004009A18':'no2-9a18', '00800000040098EE':'no3-98EE', '0080000004009981':'no4-9981', '00800000040098AE':'no5-98AE'};
+          
+          parsedList.forEach(function(parsed) {
 
-  $("#messages").append(
-    '<p style="color:' + textcolor + ';">'
-      + ' <b>[[ ' + device_name[device_id] + ' ]]</b> '
-      + getFormattedCurrentDatetime() + ' | '
-      + device_id + ' | '
-      + parsed_payload_info[0] + ' | '
-      + parsed_payload_info[1] + ' | '
-      + parsed_payload_info[2] + ' | '
-      + payload
-      //+ msg_type
-      + '</p>'
-      );
-  $("#messages").scrollTop($("#messages").prop("scrollHeight"));
+          if ( parsed.value == 'vacant') {
+            $("#" + device_id).attr('fill', 'green')
+            textcolor = 'green';
+            
+          } else if ( parsed.value == 'occupied') {
+            $("#" + device_id).attr('fill', 'red')
+            textcolor = 'red';
+          }
+        
+          $("#messages").append(
+            '<p style="color:' + textcolor + ';">'
+              + ' <b>[[ ' + device_name[device_id] + ' ]]</b> '
+              + getFormattedCurrentDatetime() + ' | '
+              + device_id + ' | '
+              + parsed.data_chan + ' | '
+              + parsed.data_type + ' | '
+              + parsed.value + ' | '
+              + payload
+              //+ msg_type
+              + '</p>'
+              );
+          $("#messages").scrollTop($("#messages").prop("scrollHeight"));
+
+  });
+  
 }
 
 var topic = "/topic/v2.1493460000000001.#";
@@ -141,7 +147,6 @@ function buttonOnClick() {
   }
 
 }
-
 
 </script>
 </body>

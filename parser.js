@@ -2,43 +2,52 @@ txt = '{"data_type": {"00": {"size": 1, "description": "Digital Input", "resolut
 
 obj = JSON.parse(txt);
 
-function getDataChanDesc(payload) {
-    var value = payload.split(" ")[0];
-    return obj.data_chan[value].description;
-}
-
-function getDataType(payload) {
-    var value = payload.split(" ")[1];
-    return obj.data_type[value].description;
-}
-
 function getParsedValue(payload) {
     var payloadList = payload.split(" ");
-    var head = obj.uplink[payloadList[0]][payloadList[1]];
+    var currLoc = 0;
+    var values = [];
 
-    if (head.hasOwnProperty('digit')) {
-        var value = head.value[payloadList[2]];
-    } else {
-        if (head.hasOwnProperty('limit')) {
-            if(parseInt(payloadList[2], 16) == parseInt(head.limit[0], 16) ) {
-                var value = head.limit[1];
-            } else if (parseInt(payloadList[2], 16) > parseInt(head.limit[0], 16) ){
-                var value = "Invalid"
-            } else {
-                var numericVal = parseInt(payloadList[2] + payloadList[3], 16);
-                var value = numericVal * obj.data_type[payloadList[1]].resolution + head.unit;
-            }
-        } else {
-            var numericVal = parseInt(payloadList[2] + payloadList[3], 16);
-            var value = numericVal * obj.data_type[payloadList[1]].resolution + head.unit;
+    while (currLoc < payloadList.length) {
+        var _data_chan = payloadList[currLoc];
+        currLoc++;
+        var _data_type = payloadList[currLoc];
+        var _size = obj.data_type[_data_type].size;
+        var _value = "";
+        var payload = _data_chan + " " + _data_type;
+        var parsed = {
+            'data_chan': obj.data_chan[_data_chan].description, 
+            'data_type': obj.data_type[_data_type].description
         }
-    }
 
-    return value;
-    /*
-    if (digit.indexOf(payloadList[1])) {
-        return obj.uplink[payloadList[0]][payloadList[1]][payloadList[2]];
-    } else {
-        return "00F0";
-    }*/
+        for (var j=1;j<=_size;j++) {
+            currLoc++;
+            _value += payloadList[currLoc];
+            payload += " " + payloadList[currLoc];
+        }
+
+        var head = obj.uplink[_data_chan][_data_type];
+
+        if (head.digit) {
+            var value = head.value[_value];
+        } else {
+            if (head.hasOwnProperty('limit')) {
+                if(parseInt(_value, 16) == parseInt(head.limit[0], 16) ) {
+                    var value = head.limit[1];
+                } else if (parseInt(_value, 16) > parseInt(head.limit[0], 16) ){
+                    var value = "Invalid"
+                } else {
+                    var value = parseInt(_value, 16) * obj.data_type[_data_type].resolution + head.unit;
+                }
+            } else {
+                var value = parseInt(_value, 16) * obj.data_type[_data_type].resolution + head.unit;
+            }
+        }
+        parsed.value = value;
+        parsed.payload = payload;
+
+        values.push(parsed)
+        currLoc++;
+    }
+    console.log(values);
+    return values;
 }

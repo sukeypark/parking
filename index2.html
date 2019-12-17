@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <script
+    src="https://code.jquery.com/jquery-3.4.1.slim.min.js"
+    integrity="sha256-pasqAKBDmFT4eHoN2ndd6lN370kFiGUFyTiUHWhU7k8="
+    crossorigin="anonymous"></script>
+    <style>
+        table {
+          width: 100%;
+          border: 1px solid #444444;
+          border-collapse: collapse;
+        }
+        th, td {
+          border: 1px solid #444444;
+        }
+    </style>
+</head>
+<body>
+  <h1>데이터 파싱</h1>
+  <table>
+    <tr>
+      <th>Description</th>
+      <th>Data type</th>
+      <th>Data value</th>
+      <th>Payload</th>
+    </tr>
+  </table>
+
+<script src="./parser.js"></script>
+<script>
+
+var payloads = ["01 01 00", "01 01 01", "02 67 00 F0", "03 02 01 5E", "15 66 00", "15 66 01", "1C 01 01", "21 00 20", "21 00 80", "37 66 00", "37 66 01", "37 00 20", "37 00 80", "3F 01 01"];
+payloads.forEach(function(payload) {
+  var text = 
+    '<tr>' 
+    + '<td>' + getDataChanDesc(payload) + '</td>'
+    + '<td>' + getDataType(payload) + '</td>'
+    + '<td>' + getParsedValue(payload) + '</td>'
+    + '<td>' + payload + '</td>'
+    '</tr>';
+    $("table").append(text);
+});
+</script>
+</body>
+</html>
