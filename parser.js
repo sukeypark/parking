@@ -3,6 +3,7 @@ txt = '{"data_type": {"00": {"size": 1, "description": "Digital Input", "resolut
 obj = JSON.parse(txt);
 
 function getParsedValue(payload) {
+    payload = payload.toUpperCase();
     var payloadList = payload.split(" ");
     var currLoc = 0;
     var values = [];
