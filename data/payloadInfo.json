@@ -1,0 +1,101 @@
+{
+  "data_chan": {
+    "15": {
+      "value": "15",
+      "description": "Parking Status",
+      "unit": "boolean"
+    },
+    "21": {
+      "value": "21",
+      "description": "Vehicle Count",
+      "unit": "number",
+      "range": [
+        0,
+        127
+      ],
+      "outOfRangeMessage": {
+        "80": "Sensor reboot or recalibration"
+      }
+    },
+    "37": {
+      "value": "37",
+      "description": "Keep-Alive",
+      "unit": "undecided",
+      "data_type": {
+        "66": "15",
+        "00": "21"
+      }
+    },
+    "01": {
+      "value": "01",
+      "description": "Recalibrate Response",
+      "unit": "boolean"
+    },
+    "02": {
+      "value": "02",
+      "description": "Temperature",
+      "unit": "\\u00b0C"
+    },
+    "03": {
+      "value": "03",
+      "description": "Battery",
+      "unit": "V"
+    },
+    "05": {
+      "value": "05",
+      "description": "PNI Internal"
+    },
+    "06": {
+      "value": "06",
+      "description": "PNI Internal"
+    },
+    "1C": {
+      "value": "1C",
+      "description": "Deactivate Response",
+      "unit": "boolean"
+    },
+    "3F": {
+      "value": "3F",
+      "description": "Reboot Response",
+      "unit": "boolean"
+    }
+  },
+  "data_type": {
+    "66": {
+      "value": "66",
+      "size": 1,
+      "description": "Presence Sensor",
+      "resolution": 1
+    },
+    "67": {
+      "value": "67",
+      "size": 2,
+      "description": "Temperature Sensor",
+      "resolution": 0.1
+    },
+    "00": {
+      "value": "00",
+      "size": 1,
+      "description": "Digital Input",
+      "resolution": 1
+    },
+    "01": {
+      "value": "01",
+      "size": 1,
+      "description": "Digital Output",
+      "resolution": 1
+    },
+    "02": {
+      "value": "02",
+      "size": 2,
+      "description": "Analog Input",
+      "resolution": 0.01
+    },
+    "03": {
+      "value": "03",
+      "size": 2,
+      "description": "Analog Output",
+      "resolution": 0.01
+    }
+  }
+}

@@ -268,3 +268,5 @@ function reverseEndian(target, currEndianStatus, clipBrd, size) {
 	}
 	$('span:first', currEndianStatus).text(currentEndianTxt);
 }
+
+module.exports._base64ToHexStr = _base64ToHexStr;

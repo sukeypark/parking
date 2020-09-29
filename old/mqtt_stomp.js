@@ -42,3 +42,5 @@ function mqtt_stomp(mq_addr, mq_id, mq_passcode, topic, onSubscribe, flow_ctrl_b
 	    }
 	};
 }
+
+module.exports.MqttStomp = mqtt_stomp;
