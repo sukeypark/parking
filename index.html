@@ -1,6 +1,7 @@
 ﻿<!DOCTYPE html>
 <html>
 <head>
+  <meta charset="UTF-8">
   <script src="node_modules/socket.io-client/dist/socket.io.js"></script>
   <script src="node_modules/jquery/dist/jquery.min.js"></script>
   <style>
@@ -53,12 +54,12 @@
   <script>
     var socket = io.connect("http://localhost:3000");
     socket.on("message_on", function(message) {
-      console.log(message.color)
-      console.log(message.devEui)
-      $('#' + message.devEui).attr('fill', message.color);
-      $('#messages').append(message.result);
+      $('#messages').append(message.payloadInfo);
       $("#messages").scrollTop($("#messages").prop("scrollHeight"));
-    })
+    });
+    socket.on("presence_sensor_on", function(message) {
+      $('#' + message.devEui).attr('fill', message.color);
+    });
   </script>
 </body>
 </html>

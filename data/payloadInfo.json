@@ -34,7 +34,7 @@
     "02": {
       "value": "02",
       "description": "Temperature",
-      "unit": "\\u00b0C"
+      "unit": "ºC"
     },
     "03": {
       "value": "03",

@@ -38,6 +38,10 @@ client.on("error", (error) => {
 
 client.subscribe(process.env.MQTT_TOPIC);
 client.on('message', (topic, message, packet) => {
-  socketio.emit('message_on', parser.getMessageContent(topic, message));
+  let result = parser.getMessageContent(topic, message);
+  if (result.color) {
+    socketio.emit('presence_sensor_on', result);
+  }
+  socketio.emit('message_on', result);
 });
 const http = require('http').Server(app);

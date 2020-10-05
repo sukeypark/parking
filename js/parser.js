@@ -2,8 +2,8 @@ const atob = require('atob');
 const fs = require('fs');
 require('dotenv').config();
 
-const obj = JSON.parse(fs.readFileSync('data/payloadInfo.json'));
-const devList = JSON.parse(fs.readFileSync('data/devInfo.json'));
+const obj = JSON.parse(fs.readFileSync(process.env.JSON_PAYLOADINFO));
+const devList = JSON.parse(fs.readFileSync(process.env.JSON_DEVINFO));
 
 function _base64ToHexStr(b64) {
   const bin = atob(escape(b64));
@@ -29,13 +29,13 @@ function getUnitObj(chanObj, typeObj) {
     return getUnitObj(refObj, typeObj);
   } else if (unit.toLowerCase() === 'number') {
     return {
-      unit: unit.toLowerCase(),
+      unit: unit,
       range: chanObj.range,
       outOfRangeMessage: chanObj.outOfRangeMessage
     }
   } else {
     return {
-      unit: unit.toLowerCase()
+      unit: unit
     }
   }
 }
@@ -118,15 +118,15 @@ function getMessageContent(topic, message) {
   const devEui = parsedTopic[2];
   const device_id = (devEui in devList) ? devList[devEui] : devEui;
   const parsedObjectList = getParsedObjList(message);
-  let result = "";
-  let color = "black";
+  let payloadInfo = "";
+  let color;
   
   parsedObjectList.forEach(function(parsed) {
     if (parsed.dataType === "Presence Sensor") {
       color =  (parsed.dataParsed) ? "red" : "green";
     }
     
-    result += '<p style="color:' + color + ';">'
+    payloadInfo += '<p style="color:' + color + ';">'
           + ' <b>[[ ' + device_id + ' ]]</b> '
           + getFormattedCurrentDatetime() + ' | '
           + device_id + ' | '
@@ -137,7 +137,7 @@ function getMessageContent(topic, message) {
           + '</p>';
   });
 
-  return {result, color, devEui};
+  return {payloadInfo, color, devEui};
 }
 
 exports.getMessageContent = getMessageContent;
