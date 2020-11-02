@@ -68,7 +68,7 @@ function getParsedObjList(payloadRaw) {
   var payloadList = payloadHex.split(" ");
   var currLoc = 0;
   var result = [];
-
+  
   while (currLoc < payloadList.length) {
     try {
       let chanObj = obj.data_chan[payloadList[currLoc]];
@@ -115,12 +115,12 @@ function getFormattedCurrentDatetime() {
 
 function getMessageContent(topic, message) {
   const parsedTopic = topic.split(process.env.MQTT_TOPIC_SEPERATOR);
-  const devEui = parsedTopic[2];
+  const devEui = parsedTopic[1];
   const device_id = (devEui in devList) ? devList[devEui] : devEui;
   const parsedObjectList = getParsedObjList(message);
   let payloadInfo = "";
   let color;
-  
+  console.log(parsedTopic);
   parsedObjectList.forEach(function(parsed) {
     if (parsed.dataType === "Presence Sensor") {
       color =  (parsed.dataParsed) ? "red" : "green";
