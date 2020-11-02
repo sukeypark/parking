@@ -3,6 +3,8 @@ const express = require('express');
 const socketio = require('socket.io').listen(3000);
 const parser = require('./js/parser.js');
 const mqtt = require('mqtt');
+const fs = require('fs');
+
 require('dotenv').config();
 
 const app = express();
@@ -14,10 +16,16 @@ app.use(express.static(__dirname));
 app.use(express.static(path.join(__dirname, 'js')));
 app.use(express.static(path.join(__dirname, 'node_modules')));
 
+app.set('view engine', 'ejs');
+
+app.get('/', function(req, res) {
+  res.render('index', { devs: JSON.parse(fs.readFileSync(process.env.JSON_DEVINFO))});
+});
+
 socketio.on('connection', function (socket) {
   socket.emit('SOCKET CONNECTED');
 });
-
+console.log(process.env.MQTT_HOST);
 const options = {
   host: process.env.MQTT_HOST,
   port: process.env.MQTT_PORT,
@@ -38,7 +46,8 @@ client.on("error", (error) => {
 
 client.subscribe(process.env.MQTT_TOPIC);
 client.on('message', (topic, message, packet) => {
-  let result = parser.getMessageContent(topic, message);
+  let message_obj = JSON.parse(message);
+  let result = parser.getMessageContent(topic, message_obj.payload);
   if (result.color) {
     socketio.emit('presence_sensor_on', result);
   }

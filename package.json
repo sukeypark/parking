@@ -6,6 +6,7 @@
   "dependencies": {
     "atob": "^2.1.2",
     "dotenv": "^8.2.0",
+    "ejs": "^3.1.5",
     "express": "^4.17.1",
     "jquery": "^3.5.1",
     "mqtt": "^4.2.1",

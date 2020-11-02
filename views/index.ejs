@@ -33,18 +33,12 @@
       <th style="width:120px;">센서이름</th>
       <th>상태</th>
     </tr>
+    <% Object.keys(devs).forEach(function(key) { %>
     <tr>
-      <td>no3-98EE</td>
-      <td><svg><circle fill='green' id="00800000040098EE" /></svg></td>
+      <td><%- devs[key] %></td>
+      <td><svg><circle fill='green' id="<%-key%>" /></svg></td>
     </tr>
-    <tr>
-      <td>no4-9981</td>
-      <td><svg><circle fill='green' id="0080000004009981" /></svg></td>
-    </tr>
-    <tr>
-      <td>no5-98AE</td>
-      <td><svg><circle fill='green' id="00800000040098AE" /></svg></td>
-    </tr>
+    <% }); %>
   </table>
   <hr />
   <h1>payload 정보</h1>
